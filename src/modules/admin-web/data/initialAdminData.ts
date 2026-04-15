@@ -1,0 +1,210 @@
+import type {
+  AdminGlobalOrder,
+  AuditLogEntry,
+  ComplaintTicket,
+  MessageTemplate,
+  PlatformUserRecord,
+  PromotionBanner,
+  ServiceProviderRecord,
+} from '../types'
+
+export const initialProviders: ServiceProviderRecord[] = [
+  {
+    id: 'sp-1',
+    companyName: '云端吊运科技（示例）',
+    creditCode: '91330100MA0000001X',
+    contactName: '王经理',
+    contactPhone: '13800001001',
+    auditStatus: 'pending',
+    disabled: false,
+    regions: ['浙江省/杭州市/西湖区', '浙江省/杭州市/余杭区'],
+    submittedAt: '2026-03-28T10:00:00',
+    ordersCount: 0,
+    revenue: 0,
+    rating: 0,
+    responseMinutes: 0,
+  },
+  {
+    id: 'sp-2',
+    companyName: '华北重载无人机服务队',
+    creditCode: '91110105MA0000002Y',
+    contactName: '李主管',
+    contactPhone: '13900002002',
+    auditStatus: 'approved',
+    disabled: false,
+    regions: ['北京市/北京市/朝阳区'],
+    submittedAt: '2026-01-15T09:30:00',
+    ordersCount: 128,
+    revenue: 2_860_000,
+    rating: 4.7,
+    responseMinutes: 18,
+  },
+  {
+    id: 'sp-3',
+    companyName: '苏南应急物流飞服',
+    creditCode: '91320500MA0000003Z',
+    contactName: '赵运营',
+    contactPhone: '13700003003',
+    auditStatus: 'rejected',
+    disabled: true,
+    rejectedReason: '资质文件不清晰，保险已过期',
+    regions: ['江苏省/苏州市/工业园区'],
+    submittedAt: '2026-02-01T14:20:00',
+    ordersCount: 0,
+    revenue: 0,
+    rating: 0,
+    responseMinutes: 0,
+  },
+]
+
+export const initialGlobalOrders: AdminGlobalOrder[] = [
+  {
+    id: 'go-101',
+    orderNo: 'SD202604010001',
+    providerId: 'sp-2',
+    providerName: '华北重载无人机服务队',
+    clientName: '某建筑工地项目部',
+    clientPhone: '13600001111',
+    currentNode: '等待用户确认报价',
+    status: 'in_progress',
+    createdAt: '2026-04-01T08:12:00',
+    timeline: [
+      { node: '提交需求', operator: '用户', at: '2026-04-01T08:12:00' },
+      { node: '服务商接单', operator: '客服-张', at: '2026-04-01T08:25:00' },
+      { node: '服务商报价', operator: '客服-张', at: '2026-04-01T08:40:00', note: '报价 12,800 元' },
+    ],
+  },
+  {
+    id: 'go-102',
+    orderNo: 'SD202603310088',
+    providerId: 'sp-2',
+    providerName: '华北重载无人机服务队',
+    clientName: '光伏电场运维',
+    clientPhone: '13500002222',
+    currentNode: '吊运结束',
+    status: 'in_progress',
+    createdAt: '2026-03-31T11:00:00',
+    timeline: [
+      { node: '提交需求', operator: '用户', at: '2026-03-31T11:00:00' },
+      { node: '服务商接单', operator: '客服-张', at: '2026-03-31T11:10:00' },
+      { node: '用户确认报价', operator: '用户', at: '2026-03-31T12:00:00' },
+      { node: '资源分配', operator: '客服-张', at: '2026-03-31T12:15:00' },
+      { node: '前往吊运地点', operator: '地勤-刘', at: '2026-03-31T13:00:00' },
+      { node: '开始吊运', operator: '飞手-周', at: '2026-03-31T14:20:00' },
+      { node: '吊运结束', operator: '飞手-周', at: '2026-03-31T16:05:00' },
+    ],
+  },
+  {
+    id: 'go-103',
+    orderNo: 'SD202603300056',
+    providerId: 'sp-2',
+    providerName: '华北重载无人机服务队',
+    clientName: '个人用户',
+    clientPhone: '13400003333',
+    currentNode: '已关闭',
+    status: 'closed',
+    exceptionNote: '接单超时自动关闭',
+    createdAt: '2026-03-30T09:00:00',
+    timeline: [
+      { node: '提交需求', operator: '用户', at: '2026-03-30T09:00:00' },
+      { node: '订单关闭', operator: '系统', at: '2026-03-30T11:00:00', note: '2 小时无人接单' },
+    ],
+  },
+]
+
+export const initialComplaints: ComplaintTicket[] = [
+  {
+    id: 'ct-1',
+    orderId: 'go-102',
+    orderNo: 'SD202603310088',
+    userName: '光伏电场运维',
+    reason: '乱收费',
+    detail: '现场临时加价，与报价不一致。',
+    imageUrls: [],
+    status: 'pending',
+    createdAt: '2026-04-01T09:00:00',
+    updatedAt: '2026-04-01T09:00:00',
+  },
+  {
+    id: 'ct-2',
+    orderId: 'go-101',
+    orderNo: 'SD202604010001',
+    userName: '某建筑工地项目部',
+    reason: '服务态度',
+    detail: '电话沟通态度较差。',
+    imageUrls: ['https://example.com/proof1.png'],
+    status: 'processing',
+    createdAt: '2026-03-31T16:30:00',
+    updatedAt: '2026-04-01T10:00:00',
+    rectificationSuggestion: '请服务商客服主管复盘通话录音并培训。',
+  },
+]
+
+export const initialTemplates: MessageTemplate[] = [
+  {
+    id: 'mt-1',
+    name: '需求已提交',
+    channel: 'wechat_subscribe',
+    trigger: '需求提交成功',
+    content: '您的吊装需求已提交，订单号{{orderNo}}，等待服务商接单。',
+    enabled: true,
+    updatedAt: '2026-03-01T10:00:00',
+  },
+  {
+    id: 'mt-2',
+    name: '服务商已报价',
+    channel: 'sms',
+    trigger: '服务商报价',
+    content: '【闪吊】服务商已报价{{amount}}元，订单{{orderNo}}，请及时确认。',
+    enabled: true,
+    updatedAt: '2026-03-01T10:00:00',
+  },
+]
+
+export const initialPlatformUsers: PlatformUserRecord[] = [
+  {
+    id: 'pu-1',
+    name: '个人用户A',
+    phone: '131****1000',
+    verified: false,
+    blacklisted: false,
+    registeredAt: '2026-02-10T08:00:00',
+  },
+  {
+    id: 'pu-2',
+    name: '某企业',
+    phone: '132****2000',
+    verified: true,
+    blacklisted: false,
+    registeredAt: '2026-01-05T12:00:00',
+  },
+]
+
+export const initialAuditLogs: AuditLogEntry[] = [
+  {
+    id: 'al-1',
+    at: '2026-04-01T08:00:00',
+    operator: 'ops_admin',
+    action: '登录',
+    detail: '管理后台独立入口登录成功',
+  },
+]
+
+export const initialBanners: PromotionBanner[] = [
+  {
+    id: 'bn-1',
+    title: '春季吊装服务周',
+    imageUrl: 'https://placehold.co/1200x400/27272a/fbbf24?text=Banner+1',
+    linkUrl: '#/publish',
+    sort: 10,
+    enabled: true,
+  },
+  {
+    id: 'bn-2',
+    title: '企业认证专享',
+    imageUrl: 'https://placehold.co/1200x400/1e293b/fbbf24?text=Banner+2',
+    linkUrl: '#/',
+    sort: 20,
+    enabled: true,
+  },
+]
