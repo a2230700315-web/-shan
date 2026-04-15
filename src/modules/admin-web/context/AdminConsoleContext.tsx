@@ -236,8 +236,8 @@ export function AdminConsoleProvider({ children }: { children: ReactNode }) {
           const providerRaw = localStorage.getItem(providerStorageKey)
           const providerData = providerRaw ? JSON.parse(providerRaw) : { notifications: [] }
           
-          // 添加通知到服务商端
-          const notification = {
+          // 添加通知到服务商端（同时发送给 admin 和 service 角色）
+          const notificationForAdmin = {
             id: `n-${Date.now()}-${Math.floor(Math.random() * 100000)}`,
             at: Date.now(),
             title: '投诉处理通知',
@@ -249,7 +249,19 @@ export function AdminConsoleProvider({ children }: { children: ReactNode }) {
             readAt: null,
           }
           
-          providerData.notifications = [notification, ...(providerData.notifications || [])]
+          const notificationForService = {
+            id: `n-${Date.now()}-${Math.floor(Math.random() * 100000) + 100000}`,
+            at: Date.now(),
+            title: '投诉处理通知',
+            content: `订单 ${c.orderNo} 的投诉已${next === 'resolved' ? '解决' : '处理中'}，${next === 'resolved' && payload?.result ? `处理结果：${payload.result}` : ''}${payload?.suggestion ? `整改建议：${payload.suggestion}` : ''}`,
+            level: 'warning',
+            relatedOrderId: c.orderNo,
+            complaintId: c.id,
+            toRole: 'service',
+            readAt: null,
+          }
+          
+          providerData.notifications = [notificationForAdmin, notificationForService, ...(providerData.notifications || [])]
           localStorage.setItem(providerStorageKey, JSON.stringify(providerData))
         } catch (e) {
           console.error('同步投诉处理结果到服务商端失败:', e)

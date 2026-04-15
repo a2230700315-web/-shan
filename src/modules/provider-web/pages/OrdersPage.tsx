@@ -3,8 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { StatusBadge } from '@/components/ui/badge'
 import { useApp } from '@/lib/store'
-import { ClipboardList, Search, ChevronDown, ChevronUp, Clock, MapPin, Navigation, Package, ArrowRight, Bell } from 'lucide-react'
-import { ProviderWebProvider, useProviderWeb } from '../store'
+import { ClipboardList, Search, ChevronDown, ChevronUp, Clock, MapPin, Navigation, Package, ArrowRight, Bell, AlertTriangle } from 'lucide-react'
+import { useProviderWeb } from '../store'
 import type { ProviderOrder, ProviderRole, Attachment } from '../domain/types'
 import { canViewOrder, canPerformNode, canCloseOrder, nodeLabel, ORDER_NODES } from '../domain/workflow'
 
@@ -186,7 +186,7 @@ function AttachmentPicker({ onPicked, accept }: { onPicked: (atts: Attachment[])
   )
 }
 
-function OrderDetail({ order, onClose }: { order: ProviderOrder; onClose: () => void }) {
+function OrderDetail({ order, onClose, complaints }: { order: ProviderOrder; onClose: () => void; complaints: any[] }) {
   const { applyToOrder, applyUserQuoteDecisionToOrder, employees, assets, session } = useProviderWeb()
   const { showToast } = useApp()
 
@@ -324,7 +324,7 @@ function OrderDetail({ order, onClose }: { order: ProviderOrder; onClose: () => 
               <div className="text-sm font-bold">节点操作</div>
 
               {/* 接单 */}
-              {order.currentNode === 'demand_submitted' && canAct && (
+              {order.currentNode === 'demand_submitted' && canPerformNode(session.role, 'provider_accept') && (
                 <Button variant="default" className="w-full bg-primary text-foreground" onClick={() => run({ type: 'provider_accept', at: Date.now() })}>
                   接单 <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
@@ -352,7 +352,7 @@ function OrderDetail({ order, onClose }: { order: ProviderOrder; onClose: () => 
               )}
 
               {/* 报价 / 议价再报价 */}
-              {(order.currentNode === 'provider_quote' || (order.currentNode === 'user_confirm_quote' && lastQuote?.userDecision === 'rejected')) && canAct && (
+              {(order.currentNode === 'provider_quote' || (order.currentNode === 'user_confirm_quote' && lastQuote?.userDecision === 'rejected')) && canPerformNode(session.role, 'provider_quote') && (
                 <div className="p-4 rounded-2xl border border-accent/20 bg-accent/5 space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="text-sm font-semibold">服务商报价</div>
@@ -619,6 +619,57 @@ function OrderDetail({ order, onClose }: { order: ProviderOrder; onClose: () => 
               )}
             </div>
           )}
+
+          {/* 投诉处理 */}
+          <div className="space-y-4">
+            <div className="text-sm font-bold">投诉处理</div>
+            {complaints.filter(c => c.orderNo === order.id).length > 0 ? (
+              <div className="space-y-3">
+                {complaints.filter(c => c.orderNo === order.id).map(complaint => (
+                  <Card key={complaint.id} className="border-warning/20">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <AlertTriangle className="w-4 h-4 text-warning" />
+                          <span className="font-medium">投诉工单 {complaint.id}</span>
+                          <StatusBadge variant={complaint.status === 'resolved' ? 'completed' : complaint.status === 'processing' ? 'assigned' : 'maintenance'}>
+                            {complaint.status === 'resolved' ? '已解决' : complaint.status === 'processing' ? '处理中' : '待处理'}
+                          </StatusBadge>
+                        </div>
+                      </div>
+                      <div className="text-sm space-y-2">
+                        <div><span className="text-muted-foreground">投诉内容：</span>{complaint.detail}</div>
+                        {complaint.platformResult && (
+                          <div><span className="text-muted-foreground">处理结果：</span>{complaint.platformResult}</div>
+                        )}
+                        {complaint.rectificationSuggestion && (
+                          <div><span className="text-muted-foreground">整改建议：</span>{complaint.rectificationSuggestion}</div>
+                        )}
+                      </div>
+                      {(session.role === 'admin' || session.role === 'service') && complaint.status !== 'resolved' && (
+                        <div className="mt-3 pt-3 border-t border-border/50 space-y-2">
+                          <Button
+                            variant="default"
+                            className="w-full bg-primary text-foreground"
+                            onClick={() => {
+                              // 模拟处理投诉，实际应该调用 API
+                              alert('投诉处理功能已触发，实际环境中会调用后端 API 进行处理');
+                            }}
+                          >
+                            处理投诉
+                          </Button>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="text-xs text-muted-foreground">
+                暂无相关投诉
+              </div>
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>
@@ -794,7 +845,7 @@ function OrdersInner() {
         </div>
       </div>
 
-      {selected && <OrderDetail order={selected} onClose={() => setSelected(null)} />}
+      {selected && <OrderDetail order={selected} onClose={() => setSelected(null)} complaints={complaints} />}
       {selectedComplaint && <ComplaintDetail complaint={selectedComplaint} onClose={() => setSelectedComplaint(null)} />}
     </div>
   )
@@ -802,8 +853,6 @@ function OrdersInner() {
 
 export default function OrdersPage() {
   return (
-    <ProviderWebProvider>
-      <OrdersInner />
-    </ProviderWebProvider>
+    <OrdersInner />
   )
 }

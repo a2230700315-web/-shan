@@ -190,8 +190,20 @@ export function ProviderWebProvider({ children }: { children: ReactNode }) {
         }>
         if (parsed.session) setSession(parsed.session)
         if (parsed.employees?.length) setEmployees(parsed.employees)
-        if (parsed.orders?.length) setOrders(parsed.orders)
-        else setOrders(mockOrders)
+        if (parsed.orders?.length) {
+          // 去重处理
+          const uniqueOrders = []
+          const seenIds = new Set()
+          for (const order of parsed.orders) {
+            if (!seenIds.has(order.id)) {
+              seenIds.add(order.id)
+              uniqueOrders.push(order)
+            }
+          }
+          setOrders(uniqueOrders)
+        } else {
+          setOrders(mockOrders)
+        }
         if (parsed.assets?.length) setAssets(parsed.assets)
         if (parsed.complaints?.length) setComplaints(parsed.complaints)
         if (parsed.notifications?.length) setNotifications(parsed.notifications)
@@ -210,21 +222,75 @@ export function ProviderWebProvider({ children }: { children: ReactNode }) {
         if (!raw) return
         const parsed = JSON.parse(raw) as Partial<{
           orders: ProviderOrder[]
+          complaints: ProviderComplaint[]
+          notifications: NotificationItem[]
         }>
+        
+        // 同步订单数据
         if (parsed.orders?.length) {
           setOrders(prev => {
+            const existingIds = new Set(prev.map(o => o.id))
             let hasNew = false
             const merged = [...prev]
+            
             for (const newOrder of parsed.orders!) {
-              const idx = merged.findIndex(o => o.id === newOrder.id)
-              if (idx >= 0) {
-                if (JSON.stringify(merged[idx]) !== JSON.stringify(newOrder)) {
+              if (!existingIds.has(newOrder.id)) {
+                // 只添加新订单
+                merged.unshift(newOrder)
+                hasNew = true
+                existingIds.add(newOrder.id)
+              } else {
+                // 更新现有订单
+                const idx = merged.findIndex(o => o.id === newOrder.id)
+                if (idx >= 0 && JSON.stringify(merged[idx]) !== JSON.stringify(newOrder)) {
                   merged[idx] = newOrder
                   hasNew = true
                 }
-              } else {
-                merged.unshift(newOrder)
+              }
+            }
+            return hasNew ? merged : prev
+          })
+        }
+        
+        // 同步投诉数据
+        if (parsed.complaints?.length) {
+          setComplaints(prev => {
+            const existingIds = new Set(prev.map(c => c.id))
+            let hasNew = false
+            const merged = [...prev]
+            
+            for (const newComplaint of parsed.complaints!) {
+              if (!existingIds.has(newComplaint.id)) {
+                // 只添加新投诉
+                merged.unshift(newComplaint)
                 hasNew = true
+                existingIds.add(newComplaint.id)
+              } else {
+                // 更新现有投诉
+                const idx = merged.findIndex(c => c.id === newComplaint.id)
+                if (idx >= 0 && JSON.stringify(merged[idx]) !== JSON.stringify(newComplaint)) {
+                  merged[idx] = newComplaint
+                  hasNew = true
+                }
+              }
+            }
+            return hasNew ? merged : prev
+          })
+        }
+        
+        // 同步通知数据
+        if (parsed.notifications?.length) {
+          setNotifications(prev => {
+            const existingIds = new Set(prev.map(n => n.id))
+            let hasNew = false
+            const merged = [...prev]
+            
+            for (const newNotification of parsed.notifications!) {
+              if (!existingIds.has(newNotification.id)) {
+                // 只添加新通知
+                merged.unshift(newNotification)
+                hasNew = true
+                existingIds.add(newNotification.id)
               }
             }
             return hasNew ? merged : prev
@@ -261,7 +327,16 @@ export function ProviderWebProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const addOrder = useCallback((order: ProviderOrder) => {
-    setOrders(prev => [order, ...prev])
+    setOrders(prev => {
+      // 检查是否已存在相同ID的订单
+      if (prev.some(o => o.id === order.id)) {
+        // 如果存在，更新它
+        return prev.map(o => (o.id === order.id ? order : o))
+      } else {
+        // 如果不存在，添加它
+        return [order, ...prev]
+      }
+    })
     
     // 发送通知给客服和管理员
     const at = Date.now()

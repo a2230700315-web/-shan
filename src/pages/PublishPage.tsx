@@ -203,7 +203,7 @@ export default function PublishPage() {
           heightCm: Number(form.height) || 0
         },
         lifecycleStatus: 'in_progress',
-        currentNode: 'provider_accept',
+        currentNode: 'demand_submitted',
         quotes: [],
         timeline: [
           {
