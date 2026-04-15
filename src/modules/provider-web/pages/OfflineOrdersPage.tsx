@@ -1,7 +1,7 @@
-import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useMemo, useEffect, useRef } from 'react'
 import { useProviderWeb } from '../store'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { haversineDistance } from '@/lib/utils'
 import { MapPin, Navigation, Package, Phone, User, Info } from 'lucide-react'
 import L from 'leaflet'
@@ -219,7 +219,7 @@ export default function OfflineOrdersPage() {
     return formatDistance(horizontalKm)
   }, [horizontalKm])
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setForm(prev => ({
       ...prev,
