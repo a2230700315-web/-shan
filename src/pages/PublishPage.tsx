@@ -270,23 +270,23 @@ export default function PublishPage() {
   return (
     <div className="min-h-screen pt-20 pb-12 relative">
       <div className="absolute inset-0 bg-gradient-mesh opacity-20" />
-      <div className="container mx-auto px-6 relative">
+      <div className="container mx-auto px-4 md:px-6 relative">
         <div className="mb-10">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/50 border border-border/50 mb-4">
             <Sparkles className="w-4 h-4 text-neon-purple" />
             <span className="text-sm font-medium">快速发布</span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-black mb-3">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-black mb-3">
             发布<span className="text-gradient">吊运需求</span>
           </h1>
-          <p className="text-muted-foreground text-lg">在地图上选择起吊点与送达点，填写物资信息即可快速发布</p>
+          <p className="text-muted-foreground text-base md:text-lg">在地图上选择起吊点与送达点，填写物资信息即可快速发布</p>
         </div>
 
-        <div className="grid lg:grid-cols-5 gap-6">
-          <div className="lg:col-span-3">
+        <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
+          <div className="md:col-span-2 lg:col-span-3">
             <Card className="overflow-hidden bg-secondary/30 backdrop-blur-sm border-border/30">
               <CardContent className="p-0">
-                <div className="flex items-center gap-3 p-4 border-b border-border/30">
+                <div className="flex flex-wrap items-center gap-2 p-4 border-b border-border/30">
                   <Button
                     variant={selectMode === 'pickup' ? 'premium' : 'glow'}
                     size="sm"
@@ -319,7 +319,7 @@ export default function PublishPage() {
                   </div>
                 )}
 
-                <div ref={mapRef} className="h-[500px]" />
+                <div ref={mapRef} className="h-[300px] md:h-[400px] lg:h-[500px]" />
 
                 {hasLocalProvider !== null && (
                   <div className={`px-4 py-3 text-sm font-medium flex items-center gap-2 ${hasLocalProvider ? 'bg-neon-green/10 text-neon-green' : 'bg-neon-orange/10 text-neon-orange'}`}>
@@ -333,7 +333,7 @@ export default function PublishPage() {
             </Card>
           </div>
 
-          <div className="lg:col-span-2 space-y-6">
+          <div className="md:col-span-2 lg:col-span-2 space-y-6">
             <Card className="bg-secondary/30 backdrop-blur-sm border-border/30">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-base">

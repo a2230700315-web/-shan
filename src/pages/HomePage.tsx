@@ -15,20 +15,20 @@ function HeroSection() {
   const [isPlaying, setIsPlaying] = useState(true)
 
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden pt-16">
+    <section className="relative min-h-screen flex flex-col items-center overflow-hidden pt-16">
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-mesh opacity-60" />
         <div className="absolute inset-0 grid-pattern opacity-30" />
       </div>
 
-      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full bg-blue-500/10 blur-[150px] animate-pulse" />
-      <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-yellow-400/10 blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
-      <div className="absolute top-1/2 right-1/3 w-[300px] h-[300px] rounded-full bg-blue-400/10 blur-[100px] animate-pulse" style={{ animationDelay: '2s' }} />
+      <div className="absolute top-1/4 left-1/4 w-[300px] h-[300px] md:w-[500px] md:h-[500px] rounded-full bg-blue-500/10 blur-[100px] md:blur-[150px] animate-pulse" />
+      <div className="absolute bottom-1/4 right-1/4 w-[200px] h-[200px] md:w-[400px] md:h-[400px] rounded-full bg-yellow-400/10 blur-[80px] md:blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
+      <div className="absolute top-1/2 right-1/3 w-[150px] h-[150px] md:w-[300px] md:h-[300px] rounded-full bg-blue-400/10 blur-[60px] md:blur-[100px] animate-pulse" style={{ animationDelay: '2s' }} />
 
       <div className="absolute right-[3%] top-1/2 -translate-y-1/2 hidden 2xl:block">
         <div className={`relative ${isPlaying ? 'animate-float' : ''}`}>
           <div className="absolute inset-0 bg-blue-yellow-gradient opacity-20 blur-3xl rounded-full scale-150" />
-          <svg width="500" height="400" viewBox="0 0 500 400" fill="none" xmlns="http://www.w3.org/2000/svg" className="relative cursor-pointer hover:scale-105 transition-transform duration-500" onClick={() => setIsPlaying(!isPlaying)}>
+          <svg width="500" height="400" viewBox="0 0 500 400" fill="none" xmlns="http://www.w3.org/2000/svg" className="relative cursor-pointer hover:scale-105 transition-transform duration-500 w-[300px] h-[240px] md:w-[500px] md:h-[400px]" onClick={() => setIsPlaying(!isPlaying)}>
             <defs>
               <linearGradient id="droneGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stopColor="#3B82F6" />
@@ -98,7 +98,7 @@ function HeroSection() {
         </div>
       </div>
 
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-4 md:px-6 py-12 relative z-10 flex-1 flex flex-col justify-center">
         <div className="max-w-3xl">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-gray-200 shadow-sm mb-8 animate-fade-in hover:shadow-md transition-shadow cursor-default">
             <div className="relative">
@@ -109,20 +109,20 @@ function HeroSection() {
             <Sparkles className="w-3.5 h-3.5 text-yellow-500 animate-pulse" />
           </div>
 
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-black leading-[1.05] mb-8 animate-slide-up">
+          <h1 className="text-3xl md:text-5xl lg:text-7xl font-black leading-[1.05] mb-8 animate-slide-up">
             <span className="text-gray-900 hover:text-blue-600 transition-colors duration-300 cursor-default">重物上天</span>
             <br />
             <span className="blue-yellow-gradient-text inline-block hover:scale-105 transition-transform cursor-default">一键闪吊</span>
           </h1>
 
-          <p className="text-lg md:text-xl text-gray-600 max-w-xl mb-12 animate-slide-up animate-delay-100 leading-relaxed">
+          <p className="text-base md:text-lg text-gray-600 max-w-xl mb-12 animate-slide-up animate-delay-100 leading-relaxed">
             专注低空经济的无人机吊运撮合平台，连接电力、建筑、应急、光伏等场景的搬运需求与专业无人机服务商
           </p>
 
           <div className="flex flex-wrap gap-4 animate-slide-up animate-delay-200">
             <MagneticButton strength={0.2}>
               <Button 
-                size="xl" 
+                size="lg" 
                 onClick={() => navigate('/client/publish')}
                 className="bg-gradient-primary hover:opacity-90 text-white shadow-blue group"
               >
@@ -134,7 +134,7 @@ function HeroSection() {
             <MagneticButton strength={0.2}>
               <Button 
                 variant="outline" 
-                size="xl" 
+                size="lg" 
                 onClick={() => navigate('/provider/showcase')}
                 className="border-2 border-gray-200 bg-white hover:bg-gray-50 hover:border-blue-300 group shadow-sm"
               >
@@ -144,7 +144,7 @@ function HeroSection() {
             </MagneticButton>
           </div>
 
-          <div className="flex flex-wrap gap-8 mt-16 animate-slide-up animate-delay-300">
+          <div className="flex flex-wrap gap-6 mt-16 animate-slide-up animate-delay-300">
             {[
               { value: mockDashboardStats.totalOrders, label: '累计订单', icon: Package, color: 'blue' },
               { value: mockDashboardStats.safeFlightHours, label: '安全飞行', icon: Plane, color: 'yellow', suffix: 'h' },
