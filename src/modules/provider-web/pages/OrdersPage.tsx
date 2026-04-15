@@ -352,7 +352,7 @@ function OrderDetail({ order, onClose }: { order: ProviderOrder; onClose: () => 
               )}
 
               {/* 报价 / 议价再报价 */}
-              {(order.currentNode === 'provider_quote' || (order.currentNode === 'user_confirm_quote' && lastQuote?.userDecision === 'rejected')) && (session.role === 'admin' || session.role === 'service') && (
+              {(order.currentNode === 'provider_quote' || (order.currentNode === 'user_confirm_quote' && lastQuote?.userDecision === 'rejected')) && canAct && (
                 <div className="p-4 rounded-2xl border border-accent/20 bg-accent/5 space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="text-sm font-semibold">服务商报价</div>
